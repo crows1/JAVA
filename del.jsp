@@ -1,41 +1,31 @@
-<%@ page contentType="text/html;charset=utf-8" import="javax.sql.DataSource, java.sql.*"%>
-<jsp:useBean id="dbcp" class="su.dbcp.DbcpBean" scope="application"/>
+<%@ page contentType="text/html;charset=utf-8"%>
+<jsp:useBean id="addrDAO" class="su.mv.model.AddrDAO" scope="application"/>
+<jsp:useBean id="dto" class="su.mv.model.AddrDTO"/>
+<jsp:setProperty name="dto" property="*"/>
 
-<%
-	DataSource ds = null;
-	Connection con = null;
-	PreparedStatement pstmt = null;
-	String sql = "delete from BOARD where SEQ=?";
-	String seqStr = request.getParameter("seq");
+
+<%!
+	private int getSeq(HttpServletRequest request){
 		int seq = -1;
-		if(seqStr == null){
-			response.sendRedirect("ssl.jsp");
-			return;
-		}
-		seqStr = seqStr.trim();
-		if(seqStr.length() == 0){
-			response.sendRedirect("ssl.jsp");
-			return;
-		}else{
-			try{
-				seq = Integer.parseInt(seqStr);
-			}catch(NumberFormatException nfe){
-				response.sendRedirect("ssl.jsp");
-				return;
+		String seqStr = request.getParameter("seq");
+		if(seqStr != null){
+			seqStr = seqStr.trim();
+			if(seqStr.length() != 0){
+				try{
+				seq = Integer.parseInt(seqStr); 
+					return seq;
+					}catch(NumberFormatException ne){}	
 			}
 		}
+			return seq;
+	}
 %>
-		<script>
+
 <%
-		try{
-			ds = dbcp.getDs();
-			con = ds.getConnection();
-			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, seq);
-			pstmt.executeUpdate();
-			if(pstmt !=null) pstmt.close();
-			if(con != null) con.close();
-		}catch(SQLException se){
-		}
+	
+	int seq = getSeq(request);
+	if(seq != -1){
+		addrDAO.delete(seq);
+	}
 		response.sendRedirect("list.jsp");
 %>

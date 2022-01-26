@@ -28,9 +28,9 @@
   <body onload="input.name.focus()">
     <center>
 	   <hr width="600" size="2" noshade>
-	      <h2>Simple Board with JSP_DBCP</h2>
+	      <h2>Simple Board MV</h2>
 		  <!-- 뒤로가기 주소입력-->
-		  <a href='ssl.jsp'>글목록</a>
+		  <a href='list.jsp'>글목록</a>
 		  <!-- 뒤로가기 주소입력-->
 	   <hr width="600" size="2" noshade>
 	</center>

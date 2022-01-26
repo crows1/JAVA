@@ -1,5 +1,6 @@
-<%@ page contentType="text/html;charset=utf-8" import="javax.sql.DataSource, java.sql.*"%>
-<jsp:useBean id="dbcp" class="su.dbcp.DbcpBean" scope="application"/>
+<%@ page contentType="text/html;charset=utf-8" import="java.util.ArrayList,su.mv.model.AddrDTO" %>
+<jsp:useBean id="addrDAO" class="su.mv.model.AddrDAO" scope="application"/>
+
 
 <meta charset='utf-8'>
 <style>
@@ -9,12 +10,13 @@
 </style>
 <center>
 <hr width='600' size='2' noshade>
-<h2>Simple Board with JSP DBCP</h2>
+<h2>Simple Board MV</h2>
 &nbsp;&nbsp;&nbsp;
 <a href='input.jsp'>글쓰기</a>
 <hr width='600' size='2' noshade>
 <table border='1' width='600' align='center' cellpadding='3'>
 
+	
 <%	
 	String seqStr = request.getParameter("seq");
 		int seq = -1;
@@ -34,65 +36,33 @@
 				return;
 			}
 		}
-		DataSource ds = null;
-		Connection con = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		int seq1 = 0;
-		String sql = "select * from BOARD where SEQ="+seq+"";
-		try{
-			ds = dbcp.getDs();
-			con = ds.getConnection();
-			pstmt = con.prepareStatement(sql);
-			rs = pstmt.executeQuery();
-			while(rs.next()){
-				seq1 = rs.getInt(1);
-				String writer = rs.getString(2);
-				String email = rs.getString(3);
-				String subj = rs.getString(4);
-				String content = rs.getString(5);
-				Date rdate = rs.getDate(6);
+		AddrDTO dto1 = addrDAO.content(seq);
 %>
 	<tr>
 		<td width='100' align='center'>글번호</td>
-		<td><%=seq1%></td>
+		<td><%=seq%></td>
 	</tr>
 	<tr>
 		<td align='center'>글쓴이</td>
-		<td><%=writer%></td>
+		<td><%=dto1.getWriter()%></td>
 	</tr>
 	<tr>
 		<td align='center'>이메일</td>
-		<td><%=email%></td>
+		<td><%=dto1.getEmail()%></td>
 	</tr>
 	<tr>
 		<td align='center'>글제목</td>
-		<td><%=subj%></td>
+		<td><%=dto1.getSubj()%></td>
 	</tr>
 	<tr>
 		<td align='center'>글내용</td>
-		<td><%=content%></td>
+		<td><%=dto1.getCont()%></td>
 	</tr>
 	<tr>
 		<th width='100' align='center'>날짜</th>
-		<td><%=rdate%></td>
+		<td><%=dto1.getRdate()%></td>
 		</tr>
 	
-<%
-
-			}			
-		}catch(SQLException se){
-			System.out.println("ResultSet()"+seq+se);
-		}finally{
-			try{
-				if(rs !=null) rs.close();
-				if(pstmt != null) pstmt.close();
-				if(con != null) con.close();
-			}catch(SQLException se){
-			System.out.println("finally()");
-			}		
-		}
-%>
 </table>
 <hr width='600' size='2' noshade>
 <b>

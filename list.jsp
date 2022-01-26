@@ -1,67 +1,64 @@
-<%@ page contentType="text/html;charset=utf-8" import="javax.sql.DataSource, java.sql.*"%>
-<jsp:useBean id="dbcp" class="su.dbcp.DbcpBean" scope="application"/>
+<%@ page contentType="text/html;charset=utf-8" import="java.util.ArrayList,su.mv.model.AddrDTO"%>
+<jsp:useBean id="addrDAO" class="su.mv.model.AddrDAO" scope="application"/>
 
 <meta charset='utf-8'>
 <style>
-   table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-   }
-   th, td {
-      padding: 5px;
-   }
-   a { text-decoration:none }
+	table, th, td {
+	   border: 1px solid black;
+	   border-collapse: collapse;
+	}
+	th, td {
+	   padding: 5px;
+	}
+	a { text-decoration:none }
 </style>
 <center>
-   <h1>
-      Address List JSP with DBCP
-   </h1>
-   <a href="../">인덱스</a>
-      &nbsp;&nbsp;&nbsp;&nbsp; 
-   <a href="input.jsp">입력폼</a>
-   <table border='1' cellpadding='7' cellspacing='2' width='50%'>
-       <tr>
-         <th>번호</th>
-         <th>이름</th>
-         <th>주소</th>
-         <th>날짜</th>
-         <th>삭제</th>
-      </tr>
+	<hr width='600' size='2' noshade>
+	<h2>Simple Board MV</h2>
+		&nbsp;&nbsp;&nbsp;
+	<a href='input.jsp'>글쓰기</a>
+		&nbsp;&nbsp;&nbsp;
+	<a href='../'>인덱스</a>
+	<hr width='600' size='2' noshade>
+	</center>
+	<table border='1' width='600' align='center' cellpadding='2'>
+	<tr>
+		<th align='center' width='10%'>글번호</th>
+		<th align='center' width='15%'>작성자</th>
+		<th align='center' width='30%'>이메일</th>
+		<th align='center' width='30%'>글제목</th>
+		<th align='center' width='15%'>날짜</th>
+	</tr>
 <%
-	  DataSource ds = null;
-	  Connection con = null;
-	  Statement stmt = null;
-	  ResultSet rs = null;
-      String sql = "select * from address order by seq desc";
-      try{
-    	 ds = dbcp.getDs();
-  		 con = ds.getConnection();
-         stmt = con.createStatement();
-         rs = stmt.executeQuery(sql);
-         while(rs.next()){
-            int seq = rs.getInt(1);
-            String name = rs.getString(2);
-            String addr = rs.getString(3);
-            Date rdate = rs.getDate(4);
+	ArrayList<AddrDTO> list = addrDAO.list();
+		if(list != null){
+			int size = list.size();
+			if(size !=0){
+				for(AddrDTO dto : list){
 %>
-                    <tr>
-                  <td align='center'><%=seq%></td>
-                  <td><%=name%></td>
-                  <td><%=addr%></td>
-                  <td><%=rdate%></td>
-                  <td align='center'><a href='del.jsp?seq=<%=seq%>'>삭제</a></td>
-               </tr>
+
+				<tr>
+					<td align='center'><%=dto.getSeq()%></td>
+					<td align='center'><%=dto.getWriter()%></td>
+					<td align='center'><%=dto.getEmail()%></td>
+					<td align='center'>
+					<a href='cont.jsp?seq=<%=dto.getSeq()%>'><%=dto.getSubj()%></a>
+					</td>
+					<td align='center'><%=dto.getRdate()%></td>
+				</tr>
 <%
-          }
-       }catch(SQLException se){
-          System.out.println("#service() se: " + se);
-       }finally{
-          try{
-            if(rs != null) rs.close();
-            if(stmt != null) stmt.close();
-            if(con != null) con.close();
-          }catch(SQLException se){}
-       }
-%> 
-   </table>
+			}
+		}else{
+%>
+			<tr>
+				<td colsapn='5'style="text-align:center">데이터가 하나도 엄쪄요~</td>
+			</tr>
+<%		
+		}
+	}			
+		
+%>
+
+</table>
+<hr width='600' size='2' noshade>
 </center>
